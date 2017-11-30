@@ -148,10 +148,8 @@ public class HelperService extends AccessibilityService {
      */
     private void checkChatInfo(AccessibilityEvent event) {
         Log.d(TAG, "EventType: " + event.getEventType());
+        Log.d(TAG, "eventClassName: " + event.getClassName().toString());
         // 收到非页面内容变化事件直接返回
-        if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            return;
-        }
         List<AccessibilityNodeInfo> nodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
                 new String[] {GET_RED_PACKET, CHECK_RED_PACKET});
         if (!nodes.isEmpty()) {
@@ -159,7 +157,6 @@ public class HelperService extends AccessibilityService {
             // 计算当前页面红包总个数
             if (!isCalcRedPacketNum) {
                 redPacketNum += nodes.size();
-                Log.d(TAG, "redPacketNum: " + redPacketNum);
                 isCalcRedPacketNum = true;
             }
             // 获取目标红包节点
@@ -178,10 +175,6 @@ public class HelperService extends AccessibilityService {
      */
     private void openRedPacket(AccessibilityEvent event) {
         if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            return;
-        }
-        // 不存在红包直接返回
-        if (redPacketNum <= 0) {
             return;
         }
         // 存在可拆红包
@@ -214,9 +207,6 @@ public class HelperService extends AccessibilityService {
      */
     private void back(AccessibilityEvent event) {
         if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            return;
-        }
-        if (redPacketNum <= 0) {
             return;
         }
         List<AccessibilityNodeInfo> nodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
