@@ -18,9 +18,7 @@ import java.util.List;
  * @author yaochen 2017/11/30 15:09 All rights reserved.
  * @describe TODO
  */
-
 public class HelperService extends AccessibilityService {
-
     private static final String TAG = "HelperService";
 
     // 锁屏、解锁相关
@@ -57,7 +55,6 @@ public class HelperService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-
         // 监听推送通知
         watchNotifications(event);
 
@@ -84,15 +81,16 @@ public class HelperService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         // 获取电源管理器对象
-        pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         // 得到键盘锁管理器对象
-        km = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+        km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         // 初始化一个键盘锁管理器对象
         kl = km.newKeyguardLock("unLock");
     }
 
     /**
      * 监听推送通知
+     *
      * @param event
      */
     private void watchNotifications(AccessibilityEvent event) {
@@ -105,8 +103,10 @@ public class HelperService extends AccessibilityService {
         if (!title.contains(RED_PACKET_NOTIFICATION)) {
             return;
         }
+
         // 是微信红包就解锁
         wakeAndUnLock(true);
+
         // 微信红包时，发送该消息,模拟点击该消息
         Parcelable parcelable = event.getParcelableData();
         if (parcelable instanceof Notification) {
@@ -122,9 +122,9 @@ public class HelperService extends AccessibilityService {
 
     /**
      * 监听聊天列表
-     * @param event
-     * 聊天列表有变化时会收到TYPE_WINDOW_CONTENT_CHANGED事件
-     * 经测试在收到TYPE_WINDOW_CONTENT_CHANGED事件之前会收到TYPE_WINDOW_STATE_CHANGED
+     *
+     * @param event 聊天列表有变化时会收到TYPE_WINDOW_CONTENT_CHANGED事件
+     *              经测试在收到TYPE_WINDOW_CONTENT_CHANGED事件之前会收到TYPE_WINDOW_STATE_CHANGED
      */
     private void watchChatList(AccessibilityEvent event) {
         // 收到非页面内容变化事件直接返回
@@ -133,7 +133,7 @@ public class HelperService extends AccessibilityService {
         }
         // 获取包含“[微信红包]”字样的内容节点
         List<AccessibilityNodeInfo> nodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
-                new String[] {RED_PACKET_NOTIFICATION});
+                new String[]{RED_PACKET_NOTIFICATION});
         if (!nodes.isEmpty()) {
             AccessibilityNodeInfo node = nodes.get(0);
             node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
@@ -144,6 +144,7 @@ public class HelperService extends AccessibilityService {
     /**
      * 遍历聊天详情节点
      * 判断是否存在红包
+     *
      * @param event
      */
     private void checkChatInfo(AccessibilityEvent event) {
@@ -151,7 +152,7 @@ public class HelperService extends AccessibilityService {
         Log.d(TAG, "eventClassName: " + event.getClassName().toString());
         // 收到非页面内容变化事件直接返回
         List<AccessibilityNodeInfo> nodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
-                new String[] {GET_RED_PACKET, CHECK_RED_PACKET});
+                new String[]{GET_RED_PACKET, CHECK_RED_PACKET});
         if (!nodes.isEmpty()) {
             Log.d(TAG, "存在红包！");
             // 计算当前页面红包总个数
@@ -179,10 +180,10 @@ public class HelperService extends AccessibilityService {
         }
         // 存在可拆红包
         List<AccessibilityNodeInfo> packetNodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
-                new String[] {RECEIVE_RED_PACKET_PRIVATE, RECEIVE_RED_PACKET_PUBLIC});
+                new String[]{RECEIVE_RED_PACKET_PRIVATE, RECEIVE_RED_PACKET_PUBLIC});
         // 红包被领完或者过期等异常情况
         List<AccessibilityNodeInfo> errNodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
-                new String[] {RED_PACKET_PICKED, RED_PACKET_EXPIRED});
+                new String[]{RED_PACKET_PICKED, RED_PACKET_EXPIRED});
         if (!packetNodes.isEmpty()) {
             // 接收红包+1
             hasReceived++;
@@ -210,7 +211,7 @@ public class HelperService extends AccessibilityService {
             return;
         }
         List<AccessibilityNodeInfo> nodes = findAccessibilityNodeInfosByTexts(rootNodeInfo,
-                new String[] {"红包详情"});
+                new String[]{"红包详情"});
         if (!nodes.isEmpty()) {
             Log.d(TAG, "进入到领完页面 ");
             performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
